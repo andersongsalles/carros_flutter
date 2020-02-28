@@ -1,5 +1,5 @@
 import 'package:carros_flutter/pages/api_response.dart';
-import 'package:carros_flutter/pages/usuario.dart';
+import 'file:///D:/dev/carros_flutter/carros_flutter/lib/pages/login/usuario.dart';
 import 'package:carros_flutter/utils/alert.dart';
 import 'package:carros_flutter/utils/nav.dart';
 import 'package:carros_flutter/widgets/app_button.dart';
@@ -7,7 +7,7 @@ import 'package:carros_flutter/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'home_page.dart';
+import '../carro/home_page.dart';
 import 'login_api.dart';
 
 class LoginPage extends StatefulWidget {
