@@ -1,77 +1,69 @@
 import 'package:carros_flutter/drawer_list.dart';
-import 'package:carros_flutter/pages/carro/carro.dart';
 import 'package:carros_flutter/pages/carro/carros_api.dart';
+import 'package:carros_flutter/pages/carro/carros_listview.dart';
+import 'package:carros_flutter/utils/prefs.dart';
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Carros"),
-      ),
-      body: _body(),
-      drawer: DrawerList(),
-    );
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin<HomePage> {
+  TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _initTabs();
   }
 
-  _body() {
-    List<Carro> carros = CarrosApi.getCarros();
+  _initTabs() async {
+    int index = await Prefs.getInt("tabIdx");
+    _tabController = TabController(length: 3, vsync: this);
 
-    return Container(
-      padding: EdgeInsets.all(16),
-      child: ListView.builder(
-        itemCount: carros.length,
-        itemBuilder: (context, index) {
-          Carro c = carros[index];
+    setState(() {
+      _tabController.index = index;
+    });
 
-          return Card(
-            color: Colors.grey[100],
-            child: Container(
-              padding: EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Center(
-                    child: Image.network(
-                      c.urlFoto,
-                      width: 250,
-                    ),
-                  ),
-                  Text(
-                    c.nome,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 25),
-                  ),
-                  Text(
-                    "descrição...",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  ButtonTheme.bar(
-                    // make buttons use the appropriate styles for cards
-                    child: ButtonBar(
-                      children: <Widget>[
-                        FlatButton(
-                          child: const Text('DETALHES'),
-                          onPressed: () {
-                            /* ... */
-                          },
-                        ),
-                        FlatButton(
-                          child: const Text('SHARE'),
-                          onPressed: () {
-                            /* ... */
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
+    _tabController.addListener(() {
+      Prefs.setInt("tabIdx", _tabController.index);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("Carros"),
+          bottom: _tabController == null
+              ? null
+              : TabBar(
+                  controller: _tabController,
+                  tabs: [
+                    Tab(text: "Clássicos"),
+                    Tab(text: "Esportivos"),
+                    Tab(text: "Luxo"),
+                  ],
+                ),
+        ),
+        body: _tabController == null
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : TabBarView(
+                controller: _tabController,
+                children: [
+                  CarrosListView(TipoCarro.classicos),
+                  CarrosListView(TipoCarro.esportivos),
+                  CarrosListView(TipoCarro.luxo),
                 ],
               ),
-            ),
-          );
-        },
+        drawer: DrawerList(),
       ),
     );
   }
