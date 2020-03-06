@@ -1,9 +1,8 @@
-import 'dart:async';
-
 import 'package:carros_flutter/pages/carro/carro.dart';
 import 'package:carros_flutter/pages/carro/carro_page.dart';
-import 'package:carros_flutter/pages/carro/carros_api.dart';
+import 'package:carros_flutter/pages/carro/carros_bloc.dart';
 import 'package:carros_flutter/utils/nav.dart';
+import 'package:carros_flutter/widgets/text_error.dart';
 import 'package:flutter/material.dart';
 
 class CarrosListView extends StatefulWidget {
@@ -18,7 +17,9 @@ class _CarrosListViewState extends State<CarrosListView>
     with AutomaticKeepAliveClientMixin<CarrosListView> {
   List<Carro> carros;
 
-  final _streamController = StreamController<List<Carro>>();
+  String get tipo => widget.tipo;
+
+  final _bloc = CarrosBloc();
 
   @override
   bool get wantKeepAlive => true;
@@ -27,12 +28,7 @@ class _CarrosListViewState extends State<CarrosListView>
   void initState() {
     super.initState();
 
-    _loadCarros();
-  }
-
-  _loadCarros() async {
-    List<Carro> carros = await CarrosApi.getCarros(widget.tipo);
-    _streamController.add(carros);
+    _bloc.fetch(tipo);
   }
 
   @override
@@ -40,18 +36,10 @@ class _CarrosListViewState extends State<CarrosListView>
     super.build(context);
 
     return StreamBuilder(
-      stream: _streamController.stream,
+      stream: _bloc.stream,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Center(
-            child: Text(
-              "Não foi possível buscar os carros",
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 22,
-              ),
-            ),
-          );
+          return TextError("Não foi possível buscar os carros");
         }
 
         if (!snapshot.hasData) {
@@ -127,5 +115,12 @@ class _CarrosListViewState extends State<CarrosListView>
 
   _onClickCarro(Carro c) {
     push(context, CarroPage(c));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    _bloc.dispose();
   }
 }

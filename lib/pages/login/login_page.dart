@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:carros_flutter/pages/api_response.dart';
-import 'file:///D:/dev/carros_flutter/carros_flutter/lib/pages/login/usuario.dart';
+import 'package:carros_flutter/pages/login/login_bloc.dart';
+import 'package:carros_flutter/pages/login/usuario.dart';
 import 'package:carros_flutter/utils/alert.dart';
 import 'package:carros_flutter/utils/nav.dart';
 import 'package:carros_flutter/widgets/app_button.dart';
@@ -10,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import '../carro/home_page.dart';
-import 'login_api.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -20,7 +20,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
 
-  final _streamController = StreamController<bool>();
+  final _bloc = LoginBloc();
 
   final _tLogin = TextEditingController();
   final _tSenha = TextEditingController();
@@ -77,7 +77,8 @@ class _LoginPageState extends State<LoginPage> {
               height: 20,
             ),
             StreamBuilder<bool>(
-              stream: _streamController.stream,
+              stream: _bloc.buttonBloc.stream,
+              initialData: false,
               builder: (context, snapshot) {
                 return AppButton(
                   "Entrar",
@@ -85,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                   showProgress: snapshot.data,
                 );
               }
-            )
+            ),
           ],
         ),
       ),
@@ -102,9 +103,7 @@ class _LoginPageState extends State<LoginPage> {
 
     print("Login: $login, Senha: $senha");
 
-    _streamController.add(true);
-
-    ApiResponse response = await LoginApi.login(login, senha);
+    ApiResponse response = await _bloc.login(login, senha);
 
     if(response.ok) {
       Usuario user = response.result;
@@ -114,7 +113,6 @@ class _LoginPageState extends State<LoginPage> {
       alert(context, response.msg);
     }
 
-    _streamController.add(false);
   }
 
   String _validateLogin(String text) {
@@ -138,6 +136,6 @@ class _LoginPageState extends State<LoginPage> {
   void dispose() {
     super.dispose();
 
-    _streamController.close();
+    _bloc.dispose();
   }
 }
