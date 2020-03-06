@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:carros_flutter/pages/api_response.dart';
 import 'file:///D:/dev/carros_flutter/carros_flutter/lib/pages/login/usuario.dart';
 import 'package:carros_flutter/utils/alert.dart';
@@ -18,12 +20,12 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
 
+  final _streamController = StreamController<bool>();
+
   final _tLogin = TextEditingController();
   final _tSenha = TextEditingController();
 
   final _focusSenha = FocusNode();
-
-  bool _showProgress = false;
 
   @override
   void initState() {
@@ -74,10 +76,15 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               height: 20,
             ),
-            AppButton(
-              "Entrar",
-              onPressed: _onClickLogin,
-              showProgress: _showProgress,
+            StreamBuilder<bool>(
+              stream: _streamController.stream,
+              builder: (context, snapshot) {
+                return AppButton(
+                  "Entrar",
+                  onPressed: _onClickLogin,
+                  showProgress: snapshot.data,
+                );
+              }
             )
           ],
         ),
@@ -95,9 +102,7 @@ class _LoginPageState extends State<LoginPage> {
 
     print("Login: $login, Senha: $senha");
 
-    setState(() {
-      _showProgress = true; 
-    });
+    _streamController.add(true);
 
     ApiResponse response = await LoginApi.login(login, senha);
 
@@ -109,9 +114,7 @@ class _LoginPageState extends State<LoginPage> {
       alert(context, response.msg);
     }
 
-    setState(() {
-      _showProgress = false; 
-    });
+    _streamController.add(false);
   }
 
   String _validateLogin(String text) {
@@ -134,5 +137,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void dispose() {
     super.dispose();
+
+    _streamController.close();
   }
 }
