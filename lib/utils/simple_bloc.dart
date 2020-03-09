@@ -1,15 +1,20 @@
+
 import 'dart:async';
 
 class SimpleBloc<T> {
+
   final _controller = StreamController<T>();
+
   Stream<T> get stream => _controller.stream;
 
   void add(T object) {
-    _controller.add(object);
+    if(! _controller.isClosed) {
+      _controller.add(object);
+    }
   }
 
   void addError(Object error) {
-    if(!_controller.isClosed){
+    if(! _controller.isClosed) {
       _controller.addError(error);
     }
   }
@@ -19,5 +24,6 @@ class SimpleBloc<T> {
   }
 }
 
-class BooleanBloc extends SimpleBloc<bool>{}
- 
+class BooleanBloc extends SimpleBloc<bool> {
+
+}

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:carros_flutter/pages/api_response.dart';
+import 'package:carros_flutter/pages/carro/home_page.dart';
 import 'package:carros_flutter/pages/login/login_bloc.dart';
 import 'package:carros_flutter/pages/login/usuario.dart';
 import 'package:carros_flutter/utils/alert.dart';
@@ -10,7 +11,6 @@ import 'package:carros_flutter/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import '../carro/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -66,18 +66,21 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               height: 10,
             ),
+            SizedBox(height: 10),
             AppText(
               "Senha",
               "Digite a Senha",
               controller: _tSenha,
               password: true,
               validator: _validateSenha,
+              keyboardType: TextInputType.number,
+              focusNode: _focusSenha,
             ),
             SizedBox(
               height: 20,
             ),
             StreamBuilder<bool>(
-              stream: _bloc.buttonBloc.stream,
+              stream: _bloc.stream,
               initialData: false,
               builder: (context, snapshot) {
                 return AppButton(
@@ -106,9 +109,8 @@ class _LoginPageState extends State<LoginPage> {
     ApiResponse response = await _bloc.login(login, senha);
 
     if(response.ok) {
-      Usuario user = response.result;
-      
-      push(context, HomePage());
+ //     Usuario user = response.result;
+      push(context, HomePage(), replace: true);
     } else {
       alert(context, response.msg);
     }
