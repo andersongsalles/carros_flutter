@@ -1,4 +1,4 @@
-import 'file:///D:/dev/carros_flutter/carros_flutter/lib/pages/login/login_page.dart';
+import 'package:carros_flutter/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
