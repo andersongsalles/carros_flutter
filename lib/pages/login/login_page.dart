@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:carros_flutter/pages/api_response.dart';
-import 'package:carros_flutter/pages/carro/home_page.dart';
+import 'package:carros_flutter/pages/carros/home_page.dart';
 import 'package:carros_flutter/pages/login/login_bloc.dart';
 import 'package:carros_flutter/pages/login/usuario.dart';
 import 'package:carros_flutter/utils/alert.dart';

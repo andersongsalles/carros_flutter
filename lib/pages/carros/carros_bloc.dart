@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:carros_flutter/pages/carro/carro.dart';
-import 'package:carros_flutter/pages/carro/carros_api.dart';
+import 'package:carros_flutter/pages/carros/carro.dart';
+import 'package:carros_flutter/pages/carros/carros_api.dart';
 import 'package:carros_flutter/utils/simple_bloc.dart';
 
 class CarrosBloc extends SimpleBloc<List<Carro>> {
